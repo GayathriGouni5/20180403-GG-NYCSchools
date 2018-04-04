@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">20180403-GG-NYCSchools</string>
+    <string name="schoolsList">Schools List</string>
+    <string name="back">Back</string>
+    <string name="schoolsDetails">Schools Details</string>
+    <string name="noData">Data for the school not available!</string>
+    <string name="error">Error while fetching the data</string>
+    <string name="schoolName">School Name : %1$s</string>
+    <string name="satMathScore">Sat Math Score : %1$s</string>
+    <string name="satReadingScore">Sat Reading Score : %1$s</string>
+    <string name="satWritingScore">Sat Writing Score : %1$s</string>
+    <string name="satTakers">Total Sat Takers : %1$s</string>
+</resources>
