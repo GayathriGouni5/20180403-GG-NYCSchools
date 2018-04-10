@@ -9,11 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,17 +21,28 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private SchoolListAdapter schoolDataArrayAdapter;
+
+    ListView lstSchoolData;
+    TextView tvSchoolList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final ListView lstSchoolData = findViewById(R.id.lstSchools);
-        final TextView tvSchoolList = findViewById(R.id.tvSchoolList);
-
-
+        lstSchoolData = findViewById(R.id.lstSchools);
+        tvSchoolList = findViewById(R.id.tvSchoolList);
         String url = "https://data.cityofnewyork.us/resource/97mf-9njv.json";
+        fetchSchoolsData(url);
+    }
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        NetworkSingleton.getInstance(this.getApplicationContext()).getRequestQueue().cancelAll(TAG);
+    }
+
+    private void fetchSchoolsData(String url){
         StringRequest messageRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -74,9 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        requestQueue.add(messageRequest);
 
+        NetworkSingleton.getInstance(this.getApplicationContext()).addToRequestQueue(messageRequest,TAG);
     }
-
-
 }

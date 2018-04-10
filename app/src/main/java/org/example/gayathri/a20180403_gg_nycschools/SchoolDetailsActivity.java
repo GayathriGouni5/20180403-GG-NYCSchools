@@ -8,11 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,31 +18,57 @@ import org.json.JSONObject;
 public class SchoolDetailsActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "SchoolDetailsActivity";
+    private TextView tvSChoolName;
+    private TextView tvSatReadingScore;
+    private TextView tvSatWritingScore;
+    private TextView tvSatMathScore;
+    private TextView tvTotalNumber;
+    private TextView tvSchoolDetails;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_school_details);
 
-        final TextView tvSChoolName = findViewById(R.id.tvSchoolName);
-        final TextView tvSatReadingScore = findViewById(R.id.tvSatReading);
-        final TextView tvSatWritingScore = findViewById(R.id.tvSatWriting);
-        final TextView tvSatMathScore = findViewById(R.id.tvSatMath);
-        final TextView tvTotalNumber = findViewById(R.id.tvNumberOfSatTakers);
-        final TextView tvSchoolDetails = findViewById(R.id.tvSchoolDetails);
+        tvSChoolName = findViewById(R.id.tvSchoolName);
+        tvSatReadingScore = findViewById(R.id.tvSatReading);
+        tvSatWritingScore = findViewById(R.id.tvSatWriting);
+        tvSatMathScore = findViewById(R.id.tvSatMath);
+        tvTotalNumber = findViewById(R.id.tvNumberOfSatTakers);
+        tvSchoolDetails = findViewById(R.id.tvSchoolDetails);
         final Button btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(this);
 
+        //String url = "https://data.cityofnewyork.us/resource/734v-jeq5.json?dbn=";
         Intent intent = getIntent();
         String dbn = intent.getStringExtra("schooldbn");
         if (dbn != null && !dbn.equals("")) {
+            String url = "https://data.cityofnewyork.us/resource/734v-jeq5.json?dbn="+dbn;
+            fetchSchoolData(url);
+        } else{
+            tvSchoolDetails.setText(R.string.noData);
+        }
 
-            Log.d(TAG, "onCreate: " + dbn);
-            String url = "https://data.cityofnewyork.us/resource/734v-jeq5.json?dbn=" + dbn;
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        NetworkSingleton.getInstance(this.getApplicationContext()).getRequestQueue().cancelAll(TAG);
+    }
+
+    @Override
+    public void onClick(View v) {
+        onBackPressed();
+    }
+
+    private void fetchSchoolData(String url){
+            Log.d(TAG, "fetchSchoolData: " + url);
+            //RequestQueue requestQueue = Volley.newRequestQueue(this);
             StringRequest messageRequest = new StringRequest(url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    Log.d("MainActivity", response);
+                    Log.d("requestQueue", response);
 
                     try {
                         JSONArray jsonArray = new JSONArray(response);
@@ -77,15 +101,8 @@ public class SchoolDetailsActivity extends AppCompatActivity implements View.OnC
                     tvSchoolDetails.setText(R.string.noData);
                 }
             });
-            requestQueue.add(messageRequest);
-        } else {
-            tvSchoolDetails.setText(R.string.noData);
-        }
-    }
 
+            NetworkSingleton.getInstance(this.getApplicationContext()).addToRequestQueue(messageRequest,TAG);
 
-    @Override
-    public void onClick(View v) {
-        onBackPressed();
     }
 }
